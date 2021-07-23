@@ -3,10 +3,13 @@ package com.novel.spider
 import com.novel.dao.Book
 import com.novel.dao.BookInfo
 import com.novel.dao.Chapter
+import com.novel.downloader.HtmlCallback
 import com.novel.downloader.IDownloader
 import com.novel.downloader.OkhttpDownloader
+import com.novel.pipeline.JsonFilePipeline
 import com.novel.processor.BiquwxlaProcessor
 import com.novel.processor.IProcessor
+import java.io.IOException
 
 class NovelSpider {
   private val site = "https://www.biquwx.la/"
@@ -21,11 +24,23 @@ class NovelSpider {
     this["catalog"] = biqugeProcessor.catalogProcessor
     this["info"] = biqugeProcessor.infoProcessor
   }
+  private var pipeline = JsonFilePipeline()
 
   // 使用同步下载的方法
   fun run() {
     val mainPageUrl = getNovelMainPageUrl()
     // TODO: check url match the site
+//    downloader.download(mainPageUrl, object : HtmlCallback {
+//      override fun onSuccess(html: String) {
+//
+//      }
+//
+//      override fun onFailure(e: IOException) {
+//        e.printStackTrace()
+//      }
+//    })
+
+
     val mainPageHtml = downloader.download(mainPageUrl)
     if (mainPageHtml != null) {
       val data = HashMap<String, Any>()
@@ -43,6 +58,7 @@ class NovelSpider {
         chapter.content = data["content"] as String?
       }
       val book = Book(info, catalog)
+      pipeline.process(book, "/home/xielongyu/test/${info.name}.json")
     }
   }
 

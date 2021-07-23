@@ -3,6 +3,9 @@ package com.novel.downloader
 import okhttp3.*
 import java.io.IOException
 
+// 如果使用okhttp的多线程下载队列，
+// 那么在下载一本书籍的过程中，需要许多不同的页面，
+// 如何形成一个完整的流程？
 class OkhttpDownloader : IDownloader {
   private val client = OkHttpClient()
   private val requestBuilder = Request.Builder()
@@ -17,7 +20,7 @@ class OkhttpDownloader : IDownloader {
     client.newCall(request)
       .enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-          callback.onFailure()
+          callback.onFailure(e)
         }
 
         override fun onResponse(call: Call, response: Response) {
