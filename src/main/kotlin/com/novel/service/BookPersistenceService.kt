@@ -18,6 +18,7 @@ class BookPersistenceService(
       if (Book.emptyBook == book) {
         break
       }
+      println("正在处理: ${book.info.name}")
       pipelines.process(book, dir + book.info.name + ".json")
       bookService.solved.incrementAndGet()
       println("下载完成：${dir+book.info.name+".json"}")

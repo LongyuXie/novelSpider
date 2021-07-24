@@ -7,6 +7,7 @@ import com.novel.processor.biquwxla.CatalogProcessor
 import com.novel.processor.biquwxla.ContentProcessor
 
 class BiquwxlaProcessor {
+  // site = "https://www.bqgwx.la/"
   val infoProcessor = BookInfoProcessor()
   val catalogProcessor = CatalogProcessor()
   val contentProcessor = ContentProcessor()

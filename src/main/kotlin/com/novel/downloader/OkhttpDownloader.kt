@@ -10,6 +10,14 @@ class OkhttpDownloader : IDownloader {
   private val client = OkHttpClient()
   private val requestBuilder = Request.Builder()
 
+  init {
+    client.dispatcher.maxRequests = 64
+  }
+
+  fun shutdown() {
+    client.dispatcher.executorService.shutdown()
+  }
+
   override fun download(url: String): String? {
     val request = requestBuilder.url(url).build()
     val response = client.newCall(request).execute()

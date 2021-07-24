@@ -9,7 +9,7 @@ import org.jsoup.select.Elements
 import java.io.File
 
 class Bqg52DotNetProcessor {
-
+  // site = "https://www.52bqg.net/"
   private val infoProcessor = BookInfoProcessor()
   private val data = HashMap<String, Any>()
 
@@ -19,9 +19,6 @@ class Bqg52DotNetProcessor {
   }
 
   fun parseCatalog(html: String): MutableList<Chapter> {
-    FileUtils.writeStringToFile(
-      File("/tmp/test.html"), html, "utf-8"
-    )
     val chapters = ArrayList<Chapter>()
     val doc = Jsoup.parse(html)
     val catalogList: Elements = doc.selectFirst("#list dl")!!.children()

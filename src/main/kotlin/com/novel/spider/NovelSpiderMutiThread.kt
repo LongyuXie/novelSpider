@@ -25,13 +25,13 @@ class NovelSpiderMutiThread {
     val persistenceThread = Thread(persistenceService)
 
     val list = listOf(
-      "https://www.52bqg.net/book_99054/",
-      "https://www.52bqg.net/book_58815/",
-      "https://www.52bqg.net/book_100580/",
+//      "https://www.52bqg.net/book_99054/",
+//      "https://www.52bqg.net/book_58815/",
+//      "https://www.52bqg.net/book_100580/",
       "https://www.52bqg.net/book_127071/",
     )
-//    bookService.fetchNewBooks(list)
-    bookService.fetchNewBook("https://www.52bqg.net/book_99524/")
+    bookService.fetchNewBooks(list)
+//    bookService.fetchNewBook("https://www.52bqg.net/book_99524/")
 
     persistenceThread.start()
     parseThread.start()
@@ -41,6 +41,8 @@ class NovelSpiderMutiThread {
     parseThread.join()
     downloadThread.join()
 
+    downloader.shutdown()
+//    downloader.client.dispatcher.executorService.shutdown()
     println("主线程退出！")
   }
 }
