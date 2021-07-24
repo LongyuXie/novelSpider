@@ -5,7 +5,7 @@ import org.jsoup.Jsoup
 
 
 class ContentProcessor : IProcessor {
-  override fun process(html: String, data: HashMap<String, Any>) {
+  override fun process(html: String, data: MutableMap<String, Any>) {
     val doc = Jsoup.parse(html)
     val contentHtml: String = doc.getElementById("content")!!.html()
     val content = contentHtml.replace("(<br>|&nbsp;|<!--.*-->\\s*)".toRegex(), "")

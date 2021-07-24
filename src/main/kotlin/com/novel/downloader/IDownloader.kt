@@ -7,6 +7,7 @@ interface IDownloader {
   /**
    * @return 返回一个html页面，失败返回null
    */
+  fun download(request: BookHtmlPageRequest): BookHtmlPage
+  fun download(request: BookHtmlPageRequest, callback: HtmlCallback)
   fun download(url: String): String?
-  fun download(url: String, callback: HtmlCallback)
 }

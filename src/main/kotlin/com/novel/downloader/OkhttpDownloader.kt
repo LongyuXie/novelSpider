@@ -9,22 +9,30 @@ import java.io.IOException
 class OkhttpDownloader : IDownloader {
   private val client = OkHttpClient()
   private val requestBuilder = Request.Builder()
+
   override fun download(url: String): String? {
     val request = requestBuilder.url(url).build()
     val response = client.newCall(request).execute()
     return response.body?.string()
   }
 
-  override fun download(url: String, callback: HtmlCallback) {
-    val request = requestBuilder.url(url).build()
+  override fun download(req: BookHtmlPageRequest): BookHtmlPage {
+    val request = requestBuilder.url(req.url).build()
+    val response = client.newCall(request).execute()
+    return BookHtmlPage(response.body!!.string(), req)
+  }
+
+  override fun download(req: BookHtmlPageRequest, callback: HtmlCallback) {
+    val request = requestBuilder.url(req.url).build()
     client.newCall(request)
       .enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
           callback.onFailure(e)
         }
-
         override fun onResponse(call: Call, response: Response) {
-          callback.onSuccess(response.body!!.string())
+          val html = response.body!!.string()
+          val page = BookHtmlPage(html, req)
+          callback.onSuccess(page)
         }
       })
   }

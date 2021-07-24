@@ -10,4 +10,5 @@ class BookInfo {
   var lastUpdate: String? = null
   var latestChapter: String? = null
   var latestChapterUrl: String? = null
+  var catalogUrl: String? = null
 }

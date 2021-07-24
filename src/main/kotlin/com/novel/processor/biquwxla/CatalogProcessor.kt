@@ -7,7 +7,7 @@ import org.jsoup.select.Elements
 
 
 class CatalogProcessor : IProcessor {
-  override fun process(html: String, data: HashMap<String, Any>) {
+  override fun process(html: String, data: MutableMap<String, Any>) {
     val chapters = ArrayList<Chapter>()
     val doc = Jsoup.parse(html)
     val catalogList: Elements = doc.selectFirst("#list dl")!!.children()

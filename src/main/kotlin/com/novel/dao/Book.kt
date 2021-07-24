@@ -1,16 +1,10 @@
 package com.novel.dao
 
-class Book {
-  var info: BookInfo? = null
-  var chapters: List<Chapter>? = null
-
-  constructor() {
-    info = BookInfo()
-    chapters = ArrayList()
-  }
-
-  constructor(info: BookInfo?, chapters: List<Chapter>?) {
-    this.chapters = chapters
-    this.info = info
+class Book(
+  val info: BookInfo,
+  val chapters: MutableList<Chapter>
+) {
+  companion object {
+    val emptyBook: Book = Book(BookInfo(), emptyList<Chapter>().toMutableList())
   }
 }

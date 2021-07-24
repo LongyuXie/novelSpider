@@ -3,13 +3,11 @@ package com.novel.spider
 import com.novel.dao.Book
 import com.novel.dao.BookInfo
 import com.novel.dao.Chapter
-import com.novel.downloader.HtmlCallback
 import com.novel.downloader.IDownloader
 import com.novel.downloader.OkhttpDownloader
 import com.novel.pipeline.JsonFilePipeline
 import com.novel.processor.BiquwxlaProcessor
 import com.novel.processor.IProcessor
-import java.io.IOException
 
 class NovelSpider {
   private val site = "https://www.biquwx.la/"

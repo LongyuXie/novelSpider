@@ -12,7 +12,7 @@ class BookInfoProcessor : IProcessor {
     fun setProperty(value: String, info: BookInfo)
   }
 
-  override fun process(html: String, data: HashMap<String, Any>) {
+  override fun process(html: String, data: MutableMap<String, Any>) {
     val nodes = Jsoup.parse(html).head().select("meta[property]")
     val book = BookInfo()
     val properties = arrayOf(
@@ -41,6 +41,7 @@ class BookInfoProcessor : IProcessor {
       val content = el.attr("content")
       map[property]?.setProperty(content, book)
     }
+    book.catalogUrl = book.url
     data["info"] = book
   }
 }
