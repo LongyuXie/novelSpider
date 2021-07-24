@@ -5,6 +5,8 @@ import com.novel.dao.Chapter
 import com.novel.downloader.BookHtmlPage
 import com.novel.processor.BiquwxlaProcessor
 import com.novel.processor.Bqg52DotNetProcessor
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 // 解析线程也可以使用多线程
 // 持久化线程也可以多线程
@@ -13,6 +15,7 @@ class ParseService(
 ) : Runnable{
 
   private val biqugeProcessor = Bqg52DotNetProcessor()
+  private val executorService = Executors.newCachedThreadPool()
 
   private fun parseContent(page: BookHtmlPage) {
     println("正在解析内容：${page.request.url}")
@@ -37,21 +40,36 @@ class ParseService(
     }
   }
 
-  override fun run() {
-    val parseQueue = bookService.parseQueue
-    println("线程\$ParseThread启动")
-    while (true) {
-      val page = parseQueue.take()
-      // 从BookService中获取书籍信息，将得到的页面解析后写入
+  inner class ParseTask(
+    private val page: BookHtmlPage
+  ) : Runnable {
+    override fun run() {
+      println("线程编号：${Thread.currentThread().name}")
       when (page.request.type) {
         "content" -> parseContent(page)
         "catalog" -> parseCatalog(page)
         "info" -> parseInfo(page)
-        "quit" -> {
-          bookService.quitPersistenceService()
-          break
-        }
       }
+    }
+  }
+
+  override fun run() {
+    val parseQueue = bookService.parseQueue
+    println("线程\$ParseThread启动")
+
+
+
+    while (true) {
+      val page = parseQueue.take()
+      if (page.request.type == "quit") {
+        bookService.quitPersistenceService()
+        executorService.shutdown()
+        break
+      }
+      val task = ParseTask(page)
+      executorService.execute(task)
+      // 从BookService中获取书籍信息，将得到的页面解析后写入
+
     }
     println("线程\$ParseThread退出")
   }
