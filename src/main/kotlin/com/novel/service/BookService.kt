@@ -11,6 +11,12 @@ import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 
+// 由于解析线程是多线程模型，因此book service必须被设计为线程安全的
+// 当出现错误时如何进行恢复呢？
+// 可能出现的错误
+// - 下载出错
+// - 解析出错
+// - 存储出错
 class BookService {
 
   // 由谁管理这三个队列
@@ -25,7 +31,7 @@ class BookService {
 
   private val recordMap: MutableMap<String, DownloadRecord> = HashMap()
 
-  fun addDownloadRequest(request: BookHtmlPageRequest) {
+  private fun addDownloadRequest(request: BookHtmlPageRequest) {
     downloadQueue.add(request)
   }
 
@@ -33,7 +39,7 @@ class BookService {
     parseQueue.add(page)
   }
 
-  fun addPersistenceBook(book: Book) {
+  private fun addPersistenceBook(book: Book) {
     persistenceQueue.add(book)
   }
 

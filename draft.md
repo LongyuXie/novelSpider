@@ -1,3 +1,32 @@
+基本需求
+
+
+- 这是一个命令行小说爬虫程序，初步的想法是通过小说主页地址，下载整本小说。
+
+```
+novelspider --main-page https://www.52bqg.net/book_1"
+```
+
+- 提供多种输出格式：txt、epub
+
+```
+novelspider --output "txt"
+```
+
+- 多小说源，支持从多个小说网站爬取
+
+- 批量下载，可以编辑任务队列文件
+
+```
+novelspider --task "/home/task.txt"
+```
+
+```
+## task.txt
+"https://www.52bqg.net/book_1" txt /home/novel/book/test.txt
+"https://www.52bqg.net/book_2" epub /home/novel/book/test2
+```
+
 download service  
 book persistence service
 

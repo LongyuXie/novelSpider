@@ -10,12 +10,12 @@ import java.util.concurrent.Executors
 
 // 解析线程也可以使用多线程
 // 持久化线程也可以多线程
-class ParseService(
+class PageParseService(
   private val bookService: BookService
 ) : Runnable{
 
   private val biqugeProcessor = Bqg52DotNetProcessor()
-  private val executorService = Executors.newCachedThreadPool()
+  private val executorService = Executors.newFixedThreadPool(16)
 
   private fun parseContent(page: BookHtmlPage) {
     println("正在解析内容：${page.request.url}")
@@ -48,7 +48,7 @@ class ParseService(
       when (page.request.type) {
         "content" -> parseContent(page)
         "catalog" -> parseCatalog(page)
-        "info" -> parseInfo(page)
+        "info"    -> parseInfo(page)
       }
     }
   }
@@ -57,8 +57,10 @@ class ParseService(
     val parseQueue = bookService.parseQueue
     println("线程\$ParseThread启动")
 
-
-
+    /**
+     * 使用一个消费者线程从队列中获取页面，然后提交给解析线程
+     * 这样就不需要设计多个消费者的停止方案
+     */
     while (true) {
       val page = parseQueue.take()
       if (page.request.type == "quit") {

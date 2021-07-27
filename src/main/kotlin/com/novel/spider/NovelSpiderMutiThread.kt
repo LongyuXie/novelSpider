@@ -4,9 +4,15 @@ import com.novel.downloader.OkhttpDownloader
 import com.novel.service.BookPersistenceService
 import com.novel.service.BookService
 import com.novel.service.HtmlDownloadService
-import com.novel.service.ParseService
-import java.beans.PersistenceDelegate
+import com.novel.service.PageParseService
 
+
+// 关键在于需求：到底要做一个什么样的软件？
+// 没有需求就不知道要干什么了
+// - CUI
+// - 多小说源
+// - 不同输出格式：epub、txt
+// - 批量下载
 class NovelSpiderMutiThread {
   private val bookService = BookService()
   val downloader = OkhttpDownloader()
@@ -14,7 +20,7 @@ class NovelSpiderMutiThread {
     HtmlDownloadService(bookService, downloader)
   }
   private val parseService: Runnable by lazy {
-    ParseService(bookService)
+    PageParseService(bookService)
   }
   private val persistenceService : Runnable by lazy {
     BookPersistenceService(bookService)
