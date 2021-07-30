@@ -1,5 +1,6 @@
 package com.novel.service
 
+import com.novel.Constant
 import com.novel.dao.BookInfo
 import com.novel.dao.Chapter
 import com.novel.downloader.BookHtmlPage
@@ -62,12 +63,13 @@ class PageParseService(
      * 这样就不需要设计多个消费者的停止方案
      */
     while (true) {
-      val page = parseQueue.take()
-      if (page.request.type == "quit") {
+      val queueData = parseQueue.take()
+      if (queueData.signal == Constant.QUIT_SIGNAL) {
         bookService.quitPersistenceService()
         executorService.shutdown()
         break
       }
+      val page = queueData.data!!
       val task = ParseTask(page)
       executorService.execute(task)
       // 从BookService中获取书籍信息，将得到的页面解析后写入

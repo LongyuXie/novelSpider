@@ -1,5 +1,6 @@
 package com.novel.service
 
+import com.novel.Constant
 import com.novel.downloader.HtmlCallback
 import com.novel.downloader.BookHtmlPage
 import com.novel.downloader.BookHtmlPageRequest
@@ -30,13 +31,14 @@ class HtmlDownloadService(
     }
     Thread.sleep(1000)
     while (true) {
-      val request = bookService.downloadQueue.take()
-      if (request.type == "quit") {
+      val queueData = bookService.downloadQueue.take()
+      if (queueData.signal == Constant.QUIT_SIGNAL) {
         // 当接受到退出请求时，okhttp client依旧在下载，需要等待下载完成
         // 或者说，只有全部下载完成时才会发出退出命令
         bookService.quitParseService()
         break
       }
+      val request = queueData.data!!
       println("下载html页面: ${request.url}")
       downloader.download(request, callback)
     }

@@ -1,5 +1,6 @@
 package com.novel.service
 
+import com.novel.Constant
 import com.novel.dao.Book
 import com.novel.dao.BookInfo
 import com.novel.dao.Chapter
@@ -20,9 +21,10 @@ import java.util.concurrent.atomic.AtomicInteger
 class BookService {
 
   // 由谁管理这三个队列
-  val downloadQueue: BlockingQueue<BookHtmlPageRequest> = LinkedBlockingQueue()
-  val parseQueue: BlockingQueue<BookHtmlPage> = LinkedBlockingQueue()
-  val persistenceQueue: BlockingQueue<Book> = LinkedBlockingQueue()
+  // 队列中的数据应该有统一的格式
+  val downloadQueue: BlockingQueue<QueueData<BookHtmlPageRequest>> = LinkedBlockingQueue()
+  val parseQueue: BlockingQueue<QueueData<BookHtmlPage>> = LinkedBlockingQueue()
+  val persistenceQueue: BlockingQueue<QueueData<Book>> = LinkedBlockingQueue()
 
   val lock = Object()
 
@@ -32,15 +34,21 @@ class BookService {
   private val recordMap: MutableMap<String, DownloadRecord> = HashMap()
 
   private fun addDownloadRequest(request: BookHtmlPageRequest) {
-    downloadQueue.add(request)
+    downloadQueue.add(
+      QueueData(Constant.NORMAL_SIGNAL, request)
+    )
   }
 
   fun addParsePage(page: BookHtmlPage) {
-    parseQueue.add(page)
+    parseQueue.add(
+      QueueData(Constant.NORMAL_SIGNAL, page)
+    )
   }
 
   private fun addPersistenceBook(book: Book) {
-    persistenceQueue.add(book)
+    persistenceQueue.add(
+      QueueData(Constant.NORMAL_SIGNAL, book)
+    )
   }
 
   private fun generateUUID(): String {
@@ -140,16 +148,19 @@ class BookService {
   }
 
   fun quitParseService() {
-    this.addParsePage(
-      BookHtmlPage("html", BookHtmlPageRequest("url", "quit", ""))
-    )
+    this.parseQueue.add(QueueData(Constant.QUIT_SIGNAL))
+//    this.addParsePage(
+//      BookHtmlPage("html", BookHtmlPageRequest("url", "quit", ""))
+//    )
   }
 
   fun quitPersistenceService() {
-    this.addPersistenceBook(Book.emptyBook)
+//    this.addPersistenceBook(Book.emptyBook)
+    this.persistenceQueue.add(QueueData(Constant.QUIT_SIGNAL))
   }
   fun quitDownloadService() {
-    this.addDownloadRequest(BookHtmlPageRequest("quit page", "quit", ""))
+    this.persistenceQueue.add(QueueData(Constant.QUIT_SIGNAL))
+//    this.addDownloadRequest(BookHtmlPageRequest("quit page", "quit", ""))
   }
 
   /**

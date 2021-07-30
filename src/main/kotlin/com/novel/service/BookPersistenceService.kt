@@ -1,23 +1,25 @@
 package com.novel.service
 
+import com.novel.Constant
 import com.novel.dao.Book
 import com.novel.pipeline.JsonFilePipeline
 import java.util.concurrent.BlockingQueue
 
 class BookPersistenceService(
-  val bookService: BookService,
+  private val bookService: BookService,
 ) : Runnable {
 
   private val pipelines = JsonFilePipeline()
-  private val dir = "/home/xielongyu/test/"
+  private val dir = "D:/test/"
 
   override fun run() {
     println("线程\$PersistenceThread启动")
     while (true) {
-      val book = bookService.persistenceQueue.take()
-      if (Book.emptyBook == book) {
+      val queueData = bookService.persistenceQueue.take()
+      if (queueData.signal == Constant.QUIT_SIGNAL) {
         break
       }
+      val book = queueData.data!!
       println("正在处理: ${book.info.name}")
       pipelines.process(book, dir + book.info.name + ".json")
       bookService.solved.incrementAndGet()
